@@ -1,16 +1,52 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="style.css">
-    <title>MIA Schedule Printout</title>
+    <script src="/Users/arrielle/documents/MIA-Project/mia_search/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/Users/arrielle/Documents/MIA-Project/mia_search/server/scripts/client.js"></script>
+    <title>MIA Self-Guided Tour Printout</title>
+<style>
+
+#hidden-print-div {
+    display: none;
+    width: 730px;
+    height: 300px;
+}
+
+#schedulePrintout {
+    visibility: visible;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+    display: none;
+  }
+  #hidden-print-div, #hidden-print-div * {
+    display: inline-block;
+    visibility: visible;
+  }
+  #hidden-print-div {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
+
+</style>
+
   </head>
   <body>
+      <div class="col-12 grid-layout"><input type='button' id='printButton' value='Print'></div>
 
       <div id="schedulePrintout" class="row thirds">
+
+
         <div class="col-3 grid-layout">
           <img style="max-height: 500px;" src="https://1.api.artsmia.org/800/7505.jpg"/>
         </div>
         <div class="col-3 grid-layout" style="padding: 10px;">
-          <h2 style="text-align: left;">Japanese and Korean Art</h2>
+          <h2 style="text-align: left; margin-bottom: 10px;">Japanese and Korean Art</h2>
+          <h3 style="text-align: left;"> Gallery 345</h3>
           <p style="text-align: left !important;">The collection of Japanese and Korean art includes more than 7,000 works ranging from ancient to contemporary and is among the top five collections in the United States. The permanent display space for Japanese art is the largest in the Western world with 15 galleries and over 10,000 square feet (930 sqm). The collection itself includes Buddhist sculpture, woodblock prints, paintings, lacquer, works of bamboo, and ceramics, and it is particularly rich in works from the Edo period (1610–1868).</p>
         </div>
         <div class="col-3 grid-layout" style="background-color: white;">
@@ -32,8 +68,8 @@
           <img style="max-height: 500px;" src="https://3.api.artsmia.org/800/1704.jpg"/>
         </div>
         <div class="col-3 grid-layout" style="padding: 10px;">
-          <h2 style="text-align: left;">Contemporary Art</h2>
-          <p style="text-align: left !important;">In 2008 Mia launched an initiative to focus on the art of our times.
+          <h2 style="text-align: left; margin-bottom: 10px;">Contemporary Art</h2>
+          <h3 style="text-align: left;"> Gallery 345</h3>          <p style="text-align: left !important;">In 2008 Mia launched an initiative to focus on the art of our times.
             Through its new Department of Contemporary Art, the museum brings a fresh dynamism to its galleries by collecting and exhibiting works by living artists. This initiative emphasizes the relationships among historical art, diverse cultures, and contemporary art-making.</p>
         </div>
         <div class="col-3 grid-layout" style="background-color: white;">
@@ -51,8 +87,47 @@
 
       </div>
 
-      <div id="printerFriendly" style="width: 670px; height: 300px; border: 1px solid black;">
-          put stuff in here
+      <div id="hidden-print-div">
+      <table>
+        <tr>
+          <td style="width: 500px;">
+            <img style="float: left; padding: 0 15px; max-height: 140px;" src="https://1.api.artsmia.org/800/7505.jpg"/>
+            <strong>Japanese and Korean Art</strong></br>
+          The collection of Japanese and Korean art includes more than 7,000 works ranging from ancient to contemporary and is among the top five collections in the United States. The permanent display space for Japanese art is the largest in the Western world with 15 galleries and over 10,000 square feet (930 sqm). The collection itself includes Buddhist sculpture, woodblock prints, paintings, lacquer, works of bamboo, and ceramics, and it is particularly rich in works from the Edo period (1610–1868).</td>
+          <td style="width: 200px; padding: 0 20px; vertical-align: top;">
+            <h3>Room #312</h3>
+            <table>
+              <tr>
+                <td style="font-weight: bold;">Start Time:</td><td> 9:00am</td>
+              </tr>
+              <tr>
+              <td style="font-weight: bold;">End Time:</td><td> 9:15am</td>
+            </tr>
+            </table>
+        </tr>
+      </table>
+
+      <table>
+        <tr>
+          <td style="width: 500px;">
+            <img  style="float: left; padding: 0 15px; max-height: 140px;" src="https://3.api.artsmia.org/800/1704.jpg"/>
+            <strong>Contemporary Art</strong></br>
+            In 2008 Mia launched an initiative to focus on the art of our times.
+              Through its new Department of Contemporary Art, the museum brings a fresh dynamism to its galleries by collecting and exhibiting works by living artists. This initiative emphasizes the relationships among historical art, diverse cultures, and contemporary art-making.
+            </td>
+          <td style="width: 200px; padding: 0 20px; vertical-align: top;">
+            <h3>Room #312</h3>
+            <table>
+              <tr>
+                <td style="font-weight: bold;">Start Time:</td><td> 9:00am</td>
+              </tr>
+              <tr>
+              <td style="font-weight: bold;">End Time:</td><td> 9:15am</td>
+            </tr>
+            </table>
+        </tr>
+      </table>
+
       </div>
 
       <div id="schedulePrintout" class="row thirds">
