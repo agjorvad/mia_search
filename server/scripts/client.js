@@ -3,21 +3,12 @@ $(document).ready(function() {
   //NOTES
   //Install momentjs
   //Install jquery
-  function Obj(img, title, galleryNum, description, timeStart, timeEnd) {
-    this.imgUrl = img;
-    this.title = title;
-    this.galleryNum = galleryNum;
-    this.description = description;
-    this.timeStart = timeStart;
-    this.timeEnd = timeEnd;
-  }
 
   //Temporary object to be replaced by data from backend.
   var arrayOfObj = [];
   var timeStart = '09:45:00';
   var timeEnd = '12:30:00';
-  var startMoment = formatTime(timeStart);
-  var endMoment = formatTime(timeEnd);
+  var timeBetweenRooms = 2;
 
   var obj1 = new Obj("https://1.api.artsmia.org/800/7505.jpg","Japanese and Korean Art", "234", "The collection of Japanese and Korean art includes more than 7,000 works ranging from ancient to contemporary and is among the top five collections in the United States. The permanent display space for Japanese art is the largest in the Western world with 15 galleries and over 10,000 square feet (930 sqm). The collection itself includes Buddhist sculpture, woodblock prints, paintings, lacquer, works of bamboo, and ceramics, and it is particularly rich in works from the Edo period (1610–1868).", "", "");
   var obj2 = new Obj("https://3.api.artsmia.org/800/1704.jpg", "Contemporary Art", "342", "In 2008 Mia launched an initiative to focus on the art of our times. Through its new Department of Contemporary Art, the museum brings a fresh dynamism to its galleries by collecting and exhibiting works by living artists. This initiative emphasizes the relationships among historical art, diverse cultures, and contemporary art-making.", "", "");
@@ -37,9 +28,13 @@ $(document).ready(function() {
 
   arrayOfObj.sort(compare);
 
-  var numberOfObjects = arrayOfObj.length;
-  var timeInterval = calculateTimeInterval (timeStart, timeEnd, numberOfObjects); //Returns the # of minutes they can spend in each gallery
-  arrayOfObj = updateObjTimes(arrayOfObj, timeStart, timeEnd);
+  schedule = generateSchedule(arrayOfObj.length, timeStart, timeEnd, timeBetweenRooms);
+
+  console.log(schedule);
+  for(var i = 0; i < arrayOfObj.length; i++){
+    arrayOfObj[i].timeStart = (schedule[i].start);
+    arrayOfObj[i].timeEnd = schedule[i].end;
+  }
 
   populateDOM(arrayOfObj);
 
@@ -139,74 +134,48 @@ $(document).ready(function() {
     }
   }
 
-  function formatTime(string){
-    var string = string.replace(':','');
-    string = string.replace(':','');
-    var formattedTime = moment(string, 'HHmmss').format('HH:mm:ss');
-    return formattedTime;
+  function minsToTimeString(timeInMins) {
+    var hours = Math.floor(timeInMins/60);
+    var mins = Math.round(timeInMins % 60);
+    if (hours < 10) { hours = "0" + hours}
+    if (mins < 10) { mins = "0" + mins}
+    return hours + ":" + mins;
   }
 
-  function calculateTimeInterval (timeStart, timeEnd, numberOfObjects){
-    var startArray = timeStart.split(':');
-    var endArray = timeEnd.split(':');
-    var timeDiff = [];
-    var hours,
-    minutes,
-    interval;
+  function generateSchedule(numRooms, timeStart, timeEnd, transferTime) {
+    //timeStart 14:55 7:30-4:20 = 3:10   7:10-4:20 = 3:50
+    var startHours = parseInt(timeStart.split(':')[0]);
+    var startMins = parseInt(timeStart.split(':')[1]);
+    var endHours = parseInt(timeEnd.split(':')[0]);
+    var endMins = parseInt(timeEnd.split(':')[1]);
 
-    for(var i = 0; i < startArray.length; i++){
-      for(var j = 0; j < endArray.length; j++){
-        if(i == 0 && j == 0){
-          hours = -(startArray[j] - endArray[i]);
-        }
-        if(i == 1 && j == 1){
-          minutes = -(startArray[j] - endArray[i]);
-        }
-      }
+    var differenceInMinutes = ((endHours-startHours)*60)+(endMins-startMins);
+
+    var totalTransferTime = (numRooms-1) * transferTime;
+    var roomTime = (differenceInMinutes-totalTransferTime)/numRooms;
+
+    var schedule = [];
+
+    var offsetInMins = (startHours*60)+startMins;
+    for(var i = 0; i < numRooms; i++){
+      var startTimeInMins = ((roomTime+transferTime)*i)+offsetInMins;
+      var endTimeInMins = startTimeInMins+roomTime;
+
+      schedule[i] = { start: minsToTimeString(startTimeInMins),
+                      end: minsToTimeString(endTimeInMins) };
     }
 
-    minutes = minutes + (hours * 60);
-    hours = 0;
-    interval = (minutes - (2 * (numberOfObjects - 1))) / numberOfObjects;
-
-    return interval;
+    return schedule;
   }
 
-  function updateObjTimes(arrayOfObj, timeStart, timeEnd){
-    var tempStartTime = timeStart;
-    for(var i = 0; i < arrayOfObj.length; i++){
-      arrayOfObj[i].timeStart = timeStart;
-      var startArray = timeStart.split(':');
-      var hours = Math.round(timeInterval / 60);
-      var minutes = Math.round(timeInterval - (60 * hours));
-      startArray[0] = (parseInt(startArray[0]) + hours).toString();
-      startArray[1] = (parseInt(startArray[1]) + minutes).toString();
-      startArray[0] = (startArray[0].length == 1) ? "0" + startArray[0] : startArray[0];
-      startArray[1] = (startArray[1].length == 1) ? "0" + startArray[1] : startArray[1];
-      var stringTime = startArray[0] + ":" + startArray[1] + ":" + startArray[2];
-
-      arrayOfObj[i].timeEnd = stringTime;
-
-      var minutesPlusTwo = parseInt(startArray[1]) + 2;
-
-      var hours = Math.round(minutesPlusTwo / 60);
-      var minutes = Math.round(minutesPlusTwo - (60 * hours));
-      startArray[0] = (parseInt(startArray[0]) + hours).toString();
-      startArray[1] = parseInt(minutes).toString();
-      startArray[0] = (startArray[0].length == 1) ? "0" + startArray[0] : startArray[0];
-      startArray[1] = (startArray[1].length == 1) ? "0" + startArray[1] : startArray[1];
-      var stringTime2 = startArray[0] + ":" + startArray[1] + ":" + startArray[2];
-
-      if(i == arrayOfObj.length -1 ){
-        arrayOfObj[i].timeEnd = timeEnd;
-      }
-
-      timeStart = stringTime2;
-    }
-
-    return arrayOfObj;
+  function Obj(img, title, galleryNum, description, timeStart, timeEnd) {
+    this.imgUrl = img;
+    this.title = title;
+    this.galleryNum = galleryNum;
+    this.description = description;
+    this.timeStart = timeStart;
+    this.timeEnd = timeEnd;
   }
-
 
 
 });
