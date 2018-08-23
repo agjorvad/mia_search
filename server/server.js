@@ -1,11 +1,15 @@
 const express = require( 'express' );
 const app = express();
-const axios = require( 'axios' );
-const mia_api = require( './modules/mia_api' );
+const router= require('./router')
+
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(express.static('server/public'));
 
-app.use( '/mia_api', mia_api );
+app.use( '/api', router );
 
 let port = 5000 ||process.env.PORT;
 
