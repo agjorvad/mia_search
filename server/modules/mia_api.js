@@ -1,17 +1,22 @@
-const router = require( 'express' ).Router();
-const axios = require( 'axios' );
+const axios = require('axios'); 
 
-router.get( '/', ( req, res ) =>{
-    console.log( '/ GET request:', req.query.search );
-    let url = 'https://search.artsmia.org/' + req.query.search;
-    axios.get( url )
-    .then( ( response ) => {
-      res.send( response.data );
-    })
-    .catch ( ( err ) => {
-      console.log( 'Error on API request', err );
-    })
-    
-}) // end / GET
+const miaSearchForDepartment = axios.create({
+  baseURL: 'https://search.artsmia.org/%20department:',
+});
 
-module.exports = router;
+const miaImage = axios.create({
+  baseURL: 'https://api.artsmia.org/images',
+})
+
+module.exports = {
+  async searchForDepartment(query) {
+    return miaSearchForDepartment.get(`/${query}`)
+      .then(response => response.data)
+      .catch(err => err);
+  },
+  async getImage(id, size = 'small') {
+    return miaImage.get(`/${id}/${size}.jpg`)
+      .then(response => response.data)
+      .catch(err => err);
+  }
+}
